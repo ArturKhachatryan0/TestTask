@@ -1,0 +1,39 @@
+services:
+  backend:
+    image: node:20
+    restart: on-failure
+    working_dir: /app
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    ports:
+      - "${EXPRESS_PORT}:3000"
+    expose:
+      - "${EXPRESS_PORT}"
+    depends_on:
+      - mysql
+      - redis
+    #    command: sh -c "npm ci && npm run migrate:latest && npm run start:dev"
+    command: sh -c "npm run start:dev"
+
+  redis:
+    image: redis:7
+    env_file:
+      - .env
+    command: --port ${REDIS_PORT}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+  mysql:
+    image: mysql:8.1.0
+    env_file:
+      - .env
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_TCP_PORT}"
+    volumes:
+      - my-db:/var/lib/mysql
+
+volumes:
+  my-db:
+  app:
